@@ -1,0 +1,33 @@
+// Example using React
+import React, { useState } from 'react';
+
+function TxtSpeaker() {
+  const [text, setText] = useState('');
+  const [voice, setVoice] = useState('default');
+  const [audio, setAudio] = useState(null);
+
+  const handleGenerate = async () => {
+    const response = await fetch('/api/generate-voice', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, voice }),
+    });
+    const audioUrl = await response.json();
+    setAudio(audioUrl);
+  };
+
+  return (
+    <div>
+      <h1>txtspeaker</h1>
+      <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Enter your text here" />
+      <select value={voice} onChange={(e) => setVoice(e.target.value)}>
+        <option value="default">Default Voice</option>
+        {/* Add more voice options here */}
+      </select>
+      <button onClick={handleGenerate}>Generate Voiceover</button>
+      {audio && <audio controls src={audio}></audio>}
+    </div>
+  );
+}
+
+export default TxtSpeaker;
