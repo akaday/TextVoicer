@@ -1,7 +1,7 @@
-// Example using Node.js and Express
 const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require('axios'); // For making requests to the TTS API
+require('dotenv').config(); // Load environment variables from .env file
 
 const app = express();
 app.use(bodyParser.json());
@@ -9,11 +9,16 @@ app.use(bodyParser.json());
 app.post('/api/generate-voice', async (req, res) => {
   const { text, voice } = req.body;
 
-  // Make a request to the TTS API
-  const response = await axios.post('TTS_API_URL', { text, voice });
-  const audioUrl = response.data.audioUrl;
+  try {
+    // Make a request to the TTS API
+    const response = await axios.post(process.env.TTS_API_URL, { text, voice });
+    const audioUrl = response.data.audioUrl;
 
-  res.json(audioUrl);
+    res.json(audioUrl);
+  } catch (error) {
+    console.error('Error generating voice:', error);
+    res.status(500).json({ error: 'Failed to generate voice' });
+  }
 });
 
 const PORT = process.env.PORT || 3000;
